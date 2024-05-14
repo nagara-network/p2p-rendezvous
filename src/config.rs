@@ -8,14 +8,14 @@ pub struct Config {
     /// P2P TCP & WebRTC UDP IPv4 Address
     #[clap(long, short = 'p', default_value = "10111")]
     pub listen_port: u16,
-    /// Ed25519 Secret Key (32 Bytes) in hexadecimal
+    /// Ed25519 Secret Key file in 32 Bytes in hexadecimal format
     #[clap(
         long,
         short = 's',
-        default_value = Config::RANDOM_TRIGGER,
-        value_parser = Config::decode_or_generate_secret_seed,
+        default_value = "node.key",
+        value_parser = Config::decode_or_generate_secret_seed_file,
     )]
-    pub secret_seed: libp2p::identity::Keypair,
+    pub secret_seed_file: libp2p::identity::Keypair,
     /// WebRTC certificate (PEM file path)
     #[clap(
         long,
@@ -28,13 +28,21 @@ pub struct Config {
 
 impl Config {
     const LONG_TIMEOUT: core::time::Duration = core::time::Duration::from_secs(3600);
-    const RANDOM_TRIGGER: &'static str = "{RANDOM}";
 
-    fn decode_or_generate_secret_seed(input: &str) -> crate::Result<libp2p::identity::Keypair> {
-        let keypair = if input.eq(Self::RANDOM_TRIGGER) {
-            libp2p::identity::Keypair::generate_ed25519()
+    fn decode_or_generate_secret_seed_file(
+        input: &str,
+    ) -> crate::Result<libp2p::identity::Keypair> {
+        let path = std::path::Path::new(input);
+        let keypair = if path.exists() {
+            let secret_seed_hex = std::fs::read_to_string(path)?;
+            let secret_seed =
+                hex::decode(&secret_seed_hex).map_err(|_| crate::Error::BadSecretSeed)?;
+
+            libp2p::identity::Keypair::ed25519_from_bytes(secret_seed).unwrap()
         } else {
-            let secret_seed = hex::decode(input).map_err(|_| crate::Error::BadSecretSeed)?;
+            let secret_seed = rand::random::<[u8; 32]>();
+            let secret_seed_hex = hex::encode(&secret_seed);
+            std::fs::write(path, secret_seed_hex)?;
 
             libp2p::identity::Keypair::ed25519_from_bytes(secret_seed).unwrap()
         };
@@ -77,7 +85,7 @@ impl Config {
 
     pub fn into_swarm(self) -> crate::Result<libp2p::Swarm<crate::protocols::L2MediatorBehaviour>> {
         let listen_addresses = self.get_listen_addresses();
-        let mut swarm = libp2p::SwarmBuilder::with_existing_identity(self.secret_seed)
+        let mut swarm = libp2p::SwarmBuilder::with_existing_identity(self.secret_seed_file)
             .with_tokio()
             .with_tcp(
                 libp2p::tcp::Config::default().nodelay(true),
