@@ -1,5 +1,5 @@
 [toolchain]
-channel = "nightly-2024-05-05"
+channel = "1.78.0"
 targets = [
     "aarch64-unknown-linux-gnu",
     "aarch64-unknown-linux-musl",
