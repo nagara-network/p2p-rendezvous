@@ -1,0 +1,6 @@
+data/
+target/
+
+**/*.key
+**/*.pem
+Dockerfile
