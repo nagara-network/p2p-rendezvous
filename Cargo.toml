@@ -1,0 +1,72 @@
+[package]
+authors = [
+    "nagara Contributors <https://github.com/nagara-network>",
+    "nagara Core Developers <dev@nagara.network>",
+]
+edition = "2021"
+license = "MIT"
+name = "nagara-p2p-rendezvous"
+publish = false
+repository = "https://github.com/nagara-network/p2p-rendezvous"
+version = "1.0.24-alpha.6"
+
+[patch.crates-io]
+ss58-registry = { git = "https://github.com/nagara-network/ss58-registry", rev = "0038a88" }
+
+[dependencies]
+arrayvec = { version = "0.7.4", features = ["serde"] }
+async-trait = "0.1.80"
+blake3 = { version = "1.5.1", features = ["digest", "mmap", "serde"] }
+byte-slice-cast = "1.2.2"
+bytes = { version = "1.6.0", features = ["serde"] }
+clap = { version = "=3.2.25", features = [
+    "backtrace",
+    "cargo",
+    "derive",
+    "env",
+    "terminal_size",
+    "wrap_help",
+    "yaml",
+] }
+crossbeam-channel = "0.5.12"
+either = { version = "1.11.0", features = ["serde"] }
+hashbrown = { version = "0.14.5", features = ["serde"] }
+hex = { version = "0.4.3", features = ["serde"] }
+impl-trait-for-tuples = "0.2.2"
+libp2p = { version = "0.53.2", features = ["full"] }
+libp2p-webrtc = { version = "=0.7.1-alpha", features = ["pem", "tokio"] }
+mimalloc = { version = "0.1.41", features = ["local_dynamic_tls", "override"] }
+morus = "0.1.3"
+nagara-identities = { git = "https://github.com/nagara-network/ecosystem-libraries.git", rev = "c3394eb", features = [
+    "std",
+] }
+nagara-logging = { git = "https://github.com/nagara-network/ecosystem-libraries.git", rev = "c3394eb", features = [
+    "app",
+] }
+parity-scale-codec = { version = "3.6.12", features = [
+    "arbitrary",
+    "bit-vec",
+    "bytes",
+    "derive",
+    "full",
+    "generic-array",
+    "max-encoded-len",
+    "serde",
+] }
+rand = { version = "0.8.5", features = ["serde"] }
+serde = { version = "1.0.201", features = ["derive"] }
+serde_json = { version = "1.0.117", features = [
+    "arbitrary_precision",
+    "indexmap",
+    "preserve_order",
+] }
+ss58-registry = { git = "https://github.com/nagara-network/ss58-registry", rev = "0038a88", version = "1.44.0" }
+subxt = { version = "0.35.3", features = [
+    "getrandom",
+    "sp-core",
+    "sp-runtime",
+    "substrate-compat",
+] }
+thiserror = "1.0.60"
+tokio = { version = "1.37.0", features = ["full"] }
+toml = { version = "0.8.12", features = ["indexmap", "preserve_order"] }
